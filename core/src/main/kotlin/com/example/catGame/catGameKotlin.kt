@@ -62,8 +62,8 @@ class catGameKotlin : ApplicationAdapter(){
         velocity = 0f
         gameState = 0
         gravity = 0.2f
-        catX = screenWidth/4 - cat[0].width/4
-        catY = screenHeight
+        catX = screenWidth/2 - cat[0].width/2
+        catY = screenHeight/2- cat[0].height/2
         catWidth = cat[0].width.toFloat()
 
         random = Random(1)
