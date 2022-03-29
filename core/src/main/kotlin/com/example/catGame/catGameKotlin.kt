@@ -29,7 +29,7 @@ class catGameKotlin : ApplicationAdapter(){
     var screenWidth = 0f
     var screenHeight = 0f
     var velocity = 0f
-    var gravity = 0.2f
+    var gravity = 2f
 
     var w = 0f
     var h = 0f
@@ -64,8 +64,6 @@ class catGameKotlin : ApplicationAdapter(){
         gravity = 0.2f
         catX = screenWidth/4 - cat[0].width/4
         catY = screenHeight
-        w = 0.5f * screenWidth
-        h = 0.5f * screenHeight
         catWidth = cat[0].width.toFloat()
 
         random = Random(1)
@@ -80,8 +78,9 @@ class catGameKotlin : ApplicationAdapter(){
         batch = SpriteBatch()
         screenHeight = Gdx.graphics.height.toFloat()
         screenWidth = Gdx.graphics.width.toFloat()
-
-        background = Texture("bg.jpg")
+        w = 0.5f * screenWidth
+        h = 0.5f * screenHeight
+        background = Texture("background.jpeg")
         poison = Texture("poison.png")
         fish = Texture("fish.png")
         cat = arrayOf(
@@ -161,7 +160,7 @@ class catGameKotlin : ApplicationAdapter(){
 
             //mouse clicked
             if(Gdx.input.justTouched()) {
-                velocity -= 25
+                velocity -= 20
             }//if
 
             if (pause < 6) {
@@ -203,7 +202,7 @@ class catGameKotlin : ApplicationAdapter(){
 //            batch.end()
         }
         catRectangle = Rectangle(
-            w - catWidth / 2.toFloat(), catY / 2 - 100.toFloat(),
+            catX.toFloat(), catY.toFloat(),
             cat[catState].width.toFloat(), cat[catState].height.toFloat()
         )
 
