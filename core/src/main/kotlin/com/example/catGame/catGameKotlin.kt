@@ -7,9 +7,10 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Intersector
-
 import com.badlogic.gdx.math.Rectangle
-import java.util.*
+import kotlin.random.Random
+import kotlin.*
+
 import kotlin.collections.HashMap
 
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
@@ -17,11 +18,13 @@ class catGameKotlin : ApplicationAdapter(){
     lateinit var batch : SpriteBatch
     lateinit var background : Texture
 
-    lateinit var cat : Texture
+    lateinit var cat : Array<Texture>
     var catX = 0f
     var catY = 0f
     var catWidth = 0f
     lateinit var sleepy: Texture
+    var catState = 0
+    var pause = 0
 
     var screenWidth = 0f
     var screenHeight = 0f
@@ -58,16 +61,13 @@ class catGameKotlin : ApplicationAdapter(){
     fun initialize(){
         velocity = 0f
         gameState = 0
-        gravity = 2f
-
-        catX = screenWidth/4 - cat.width/4
-        catY = screenHeight/4
+        gravity = 0.2f
+        catX = screenWidth/4 - cat[0].width/4
+        catY = screenHeight
         w = 0.5f * screenWidth
         h = 0.5f * screenHeight
-        catWidth = cat.width.toFloat()
+        catWidth = cat[0].width.toFloat()
 
-        poison = Texture("poison.png")
-        fish = Texture("fish.png")
         random = Random(1)
         font = BitmapFont()
         font.color = Color.BLACK
@@ -77,15 +77,18 @@ class catGameKotlin : ApplicationAdapter(){
 
     override fun create() {
         super.create()
-
+        batch = SpriteBatch()
         screenHeight = Gdx.graphics.height.toFloat()
         screenWidth = Gdx.graphics.width.toFloat()
 
-        batch = SpriteBatch()
         background = Texture("bg.jpg")
-
-        cat = Texture("cat.png")
-        sleepy = Texture("sleeping.png")
+        poison = Texture("poison.png")
+        fish = Texture("fish.png")
+        cat = arrayOf(
+            Texture("frame1.png"), Texture("frame2.png"),
+            Texture("frame3.png")
+        )
+        sleepy = Texture("lose.png")
 
         initialize()
 
@@ -130,7 +133,7 @@ class catGameKotlin : ApplicationAdapter(){
 
             for (i in 0 until numOfPoison) {
                 batch.draw(poison, poisonXs[i]!!, poisonYs[i]!!)
-                poisonXs[i] = poisonXs[i]!! - 6
+                poisonXs[i] = poisonXs[i]!! - 8
                 poisonRectangles[i] =
                     Rectangle(
                         poisonXs[i]!!.toFloat(), poisonYs[i]!!.toFloat(),
@@ -148,7 +151,7 @@ class catGameKotlin : ApplicationAdapter(){
 
             for (i in 0 until numOfFish) {
                 batch.draw(fish, fishXs[i]!!, fishYs[i]!!)
-                fishXs[i] = fishXs[i]!! - 8
+                fishXs[i] = fishXs[i]!! - 4
                 fishRectangles[i] =
                     Rectangle(
                         fishXs[i]!!.toFloat(), fishYs[i]!!.toFloat(),
@@ -158,10 +161,24 @@ class catGameKotlin : ApplicationAdapter(){
 
             //mouse clicked
             if(Gdx.input.justTouched()) {
-                velocity = 30f
+                velocity -= 25
             }//if
-            velocity = velocity - gravity
-            catY = catY + velocity
+
+            if (pause < 6) {
+                pause += 1
+            }else {
+                pause = 0
+                catState = (catState + 1) % 3
+            }
+            velocity += gravity
+            catY -= velocity
+
+            if (catY < 160) {
+                catY = 160f
+            }
+
+//            velocity = velocity - gravity
+//            catY = catY + velocity
 
         }//if gameState == 1
         else if(gameState == 2){
@@ -182,12 +199,12 @@ class catGameKotlin : ApplicationAdapter(){
             //draw game end state
             batch.draw(sleepy, w-catWidth/2, catY / 2 -100)
         }else{
-            batch.draw(cat,catX,catY)
+            batch.draw(cat[catState],catX,catY)
 //            batch.end()
         }
         catRectangle = Rectangle(
             w - catWidth / 2.toFloat(), catY / 2 - 100.toFloat(),
-            cat.width.toFloat(), cat.height.toFloat()
+            cat[catState].width.toFloat(), cat[catState].height.toFloat()
         )
 
         for (i in 0 until numOfFish) {
