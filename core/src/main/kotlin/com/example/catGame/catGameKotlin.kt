@@ -340,7 +340,7 @@ class catGameKotlin : ApplicationAdapter(){
 
         message.draw(batch, "Milk: + 2 \nHeart: + 1 \nFish: + 3 ", 750f, 1700f)
         font.draw(batch, score.toString(), 100f, 150f)
-        font.draw(batch, "Record: " + highestScore.toString(), 700f, 150f)
+        message.draw(batch, "Record: " + highestScore.toString(), 700f, 150f)
         batch.end()
 
     }//render
