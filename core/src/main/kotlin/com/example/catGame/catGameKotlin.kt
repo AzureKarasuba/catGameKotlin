@@ -1,3 +1,5 @@
+//Author: Elsa Eunseo Lee & Karen Ren
+
 package com.example.catGame
 
 import com.badlogic.gdx.ApplicationAdapter
