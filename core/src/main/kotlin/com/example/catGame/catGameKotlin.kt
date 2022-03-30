@@ -67,6 +67,8 @@ class catGameKotlin : ApplicationAdapter(){
     lateinit var font: BitmapFont
     lateinit var message: BitmapFont
 
+    lateinit var highest : BitmapFont
+
     var poisonCount = 0
     var numOfPoison = 0
     lateinit var fish: Texture
@@ -76,6 +78,7 @@ class catGameKotlin : ApplicationAdapter(){
     lateinit var catRectangle : Rectangle
 
     var score = 0
+    var highestScore = 0
     var gameState = 0
 
     fun initialize(){
@@ -90,6 +93,11 @@ class catGameKotlin : ApplicationAdapter(){
         font = BitmapFont()
         font.color = Color.BLACK
         font.data.setScale(10f)
+
+        highest = BitmapFont()
+        highest.color = Color.BLACK
+        highest.data.setScale(10f)
+
 
         message = BitmapFont()
         message.color = Color.ORANGE
@@ -259,6 +267,9 @@ class catGameKotlin : ApplicationAdapter(){
         }//if gameState == 1
         else if(gameState == 2){
             //when cat hits a bomb
+                if(highestScore < score){
+                    highestScore = score
+                }
             if (Gdx.input.justTouched()) {
                 gameState = 1
                 catY = screenHeight
@@ -327,6 +338,7 @@ class catGameKotlin : ApplicationAdapter(){
 
         message.draw(batch, "Milk: + 2 \nHeart: + 1 \nFish: + 3 ", 750f, 1700f)
         font.draw(batch, score.toString(), 100f, 150f)
+        font.draw(batch, "Record: " + highestScore.toString(), 700f, 150f)
         batch.end()
 
     }//render
