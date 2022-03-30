@@ -8,10 +8,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Intersector
 import com.badlogic.gdx.math.Rectangle
+import java.util.*
+import java.util.concurrent.RecursiveAction
 import kotlin.random.Random
 import kotlin.*
 
 import kotlin.collections.HashMap
+import kotlin.concurrent.schedule
+import kotlin.concurrent.timerTask
+import java.util.logging.Handler as Handler1
 
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
 class catGameKotlin : ApplicationAdapter(){
@@ -39,6 +44,20 @@ class catGameKotlin : ApplicationAdapter(){
     var fishYs = HashMap<Int, Float>()
     var fishRectangles = HashMap<Int, Rectangle>()
 
+    var milkXs = HashMap<Int, Float>()
+    var milkYs = HashMap<Int, Float>()
+    var milkRectangles = HashMap<Int, Rectangle>()
+    lateinit var milk: Texture
+    var milkCount = 0
+    var numOfMilks = 0
+
+    var heartXs = HashMap<Int, Float>()
+    var heartYs = HashMap<Int, Float>()
+    var heartRectangles = HashMap<Int, Rectangle>()
+    lateinit var heart: Texture
+    var heartCount = 0
+    var numOfHearts = 0
+
     //poison
     var poisonXs = HashMap<Int, Float>()
     var poisonYs = HashMap<Int, Float>()
@@ -46,6 +65,7 @@ class catGameKotlin : ApplicationAdapter(){
     lateinit var poison: Texture
 
     lateinit var font: BitmapFont
+    lateinit var message: BitmapFont
 
     var poisonCount = 0
     var numOfPoison = 0
@@ -71,6 +91,11 @@ class catGameKotlin : ApplicationAdapter(){
         font.color = Color.BLACK
         font.data.setScale(10f)
 
+        message = BitmapFont()
+        message.color = Color.ORANGE
+        message.data.setScale(5f)
+
+
     }//initialize()
 
     override fun create() {
@@ -87,6 +112,8 @@ class catGameKotlin : ApplicationAdapter(){
             Texture("frame1.png"), Texture("frame2.png"),
             Texture("frame3.png")
         )
+        milk = Texture("milk.png")
+        heart  = Texture("heart.png")
         sleepy = Texture("lose.png")
 
         initialize()
@@ -100,6 +127,20 @@ class catGameKotlin : ApplicationAdapter(){
         numOfFish += 1
 
     }//makeFish
+
+    fun makeMilk() {
+        val height: Float = random.nextFloat() * Gdx.graphics.height
+        milkXs[numOfMilks] = (Gdx.graphics.width).toFloat()
+        milkYs[numOfMilks] = height
+        numOfMilks += 1
+    }//makeMilk
+
+    fun  makeHearts() {
+        val height: Float = random.nextFloat() * Gdx.graphics.height
+        heartXs[numOfHearts] = (Gdx.graphics.width).toFloat()
+        heartYs[numOfHearts] = height
+        numOfHearts += 1
+    }
 
     fun makePoison() {
         val height = random.nextFloat() * Gdx.graphics.height
@@ -158,6 +199,42 @@ class catGameKotlin : ApplicationAdapter(){
                     )
             }//for
 
+            if (milkCount < 100) {
+                milkCount += 1
+            } else {
+                milkCount = 0
+                makeMilk()
+            }
+
+            for (i in 0 until numOfMilks) {
+                batch.draw(milk, milkXs[i]!!, milkYs[i]!!)
+                milkXs[i] = milkXs[i]!! - 4
+                milkRectangles[i] =
+                    Rectangle(
+                        milkXs[i]!!.toFloat(), milkYs[i]!!.toFloat(),
+                        milk.width.toFloat(), milk.height.toFloat()
+                    )
+            }//for
+
+            if (heartCount < 100) {
+                heartCount += 1
+            } else {
+                heartCount = 0
+                makeHearts()
+            }
+
+            for (i in 0 until numOfHearts) {
+                batch.draw(heart, heartXs[i]!!, heartYs[i]!!)
+                heartXs[i] = heartXs[i]!! - 4
+                heartRectangles[i] =
+                    Rectangle(
+                        heartXs[i]!!.toFloat(), heartYs[i]!!.toFloat(),
+                        heart.width.toFloat(), heart.height.toFloat()
+                    )
+            }//for
+
+
+
             //mouse clicked
             if(Gdx.input.justTouched()) {
                 velocity -= 20
@@ -191,6 +268,10 @@ class catGameKotlin : ApplicationAdapter(){
                 poisonCount = 0
                 numOfFish = 0
                 numOfPoison = 0
+                heartCount = 0
+                milkCount = 0
+                numOfHearts = 0
+                numOfMilks = 0
             }//if (Gdx.input.justTouched()
         }//else if (gameState == 2)
 
@@ -208,9 +289,30 @@ class catGameKotlin : ApplicationAdapter(){
 
         for (i in 0 until numOfFish) {
             if (Intersector.overlaps(catRectangle, fishRectangles[i])) {
-                score++
+//                message.draw(batch, "Fish: + 3", catX, catY)
+                score += 3
                 fishXs[i] = -100f
                 fishYs[i] = -100f
+                break
+            }//if Intersector.overlaps
+        }
+
+        for (i in 0 until numOfHearts) {
+            if (Intersector.overlaps(catRectangle, heartRectangles[i])) {
+//                message.draw(batch, "Heart: + 1", catX, catY)
+                heartXs[i] = -100f
+                heartYs[i] = -100f
+                score++
+                break
+            }//if Intersector.overlaps
+        }
+
+        for (i in 0 until numOfMilks) {
+            if (Intersector.overlaps(catRectangle, milkRectangles[i])) {
+//                message.draw(batch, "Milk: + 2", catX, catY)
+                score += 2
+                milkXs[i] = -100f
+                milkYs[i] = -100f
                 break
             }//if Intersector.overlaps
         }
@@ -227,9 +329,6 @@ class catGameKotlin : ApplicationAdapter(){
         batch.end()
 
     }//render
-
-
-
     override fun dispose() {
         super.dispose()
         batch.dispose()
