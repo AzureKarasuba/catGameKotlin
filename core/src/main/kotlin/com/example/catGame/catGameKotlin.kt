@@ -237,7 +237,7 @@ class catGameKotlin : ApplicationAdapter(){
 
             //mouse clicked
             if(Gdx.input.justTouched()) {
-                velocity -= 20
+                velocity -= 10
             }//if
 
             if (pause < 6) {
@@ -325,6 +325,7 @@ class catGameKotlin : ApplicationAdapter(){
             }
         }//for i in 0 until numOfPoison
 
+        message.draw(batch, "Milk: + 2 \nHeart: + 1 \nFish: + 3 ", 750f, 1700f)
         font.draw(batch, score.toString(), 100f, 150f)
         batch.end()
 
